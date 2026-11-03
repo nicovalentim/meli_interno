@@ -1,0 +1,43 @@
+body {
+    background-color: var(--branco10);
+}
+    body h1 {
+        margin: 16px 0;
+    }
+
+section {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 32px;
+    padding: 16px 32px;
+
+    user-select: none;
+}
+    section aside {
+        background-color: var(--branco);
+        color: var(--cinzaEscuro);
+
+        box-shadow: 2px 4px 1px var(--cinzaMaisClaro);
+        border-radius: 16px;
+
+        align-content: center;
+        text-align: center;
+        overflow: hidden;
+        padding: 32px 8px;
+
+        gap: 16px;
+    }
+        aside p a {
+            cursor: pointer;
+            user-select: none;
+        }
+    section .icon {
+        height: 64px;
+        margin-bottom: 8px;
+    }
+    section h1,
+    section h3 {
+        margin: 0 auto;
+        padding: 0;
+        text-align: center;
+    }
