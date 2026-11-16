@@ -1,6 +1,6 @@
-# Controle de acesso por perfil (versão simples, só pra demonstrar o conceito).
-# O cliente manda o perfil no header "X-Perfil". !!!!!!!!Em produção, trocar por login real (JWT/SSO)!!!!!!!!!
-from fastapi import Header, HTTPException
+
+# !!! Em produção, trocar por login real (JWT/SSO): este header pode ser forjado por qualquer pessoa. !!!
+from fastapi import Depends, Header, HTTPException
 
 PERFIS = {"talent_attraction", "taops", "online", "pcd", "divulgacao"}
 
@@ -13,7 +13,6 @@ def perfil_atual(x_perfil: str = Header(default="")):
 
 def exige_perfil(*permitidos: str):
     """Cria uma dependência que só deixa passar os perfis permitidos."""
-    from fastapi import Depends
 
     def checa(perfil: str = Depends(perfil_atual)):
         if perfil not in permitidos:

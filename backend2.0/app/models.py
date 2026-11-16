@@ -1,4 +1,4 @@
-# Tabelas do banco (SQLAlchemy)
+# Tabelas do banco (SQLAlchemy).
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from .database import Base
@@ -8,7 +8,7 @@ class Parceiro(Base):
     __tablename__ = "parceiros"
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String(120), nullable=False, unique=True)
-    tipo = Column(String(50))  # ex: instituição de ensino, empresa, ongs
+    tipo = Column(String(50))  # ex: instituição de ensino, empresa, ong
     regiao = Column(String(80))
 
 
@@ -18,7 +18,7 @@ class Evento(Base):
     nome = Column(String(120), nullable=False)
     data = Column(Date, nullable=False)
     local = Column(String(200))
-    regiao = Column(String(80)) 
+    regiao = Column(String(80))   # usado no mapeamento de cobertura
     vagas = Column(Integer, default=0)
     status = Column(String(30), default="planejado")  # planejado, realizado, cancelado
     responsavel = Column(String(80))
