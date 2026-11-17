@@ -33,3 +33,23 @@ def listar(evento_id: Optional[int] = None,
     if evento_id is not None:
         q = q.filter(models.Lead.evento_id == evento_id)
     return q.order_by(models.Lead.id).offset(offset).limit(limit).all()
+
+# verificar
+@router.get("/", response_model=list[schemas.LeadOut])
+def listar(evento_id: Optional[int] = None, db: Session = Depends(get_db),
+           _=Depends(exige_perfil(*PODEM_VER_LEADS))):
+    q = db.query(models.Lead)
+    if evento_id is not None:
+        q = q.filter(models.Lead.evento_id == evento_id)
+    return q.order_by(models.Lead.id).all()
+
+
+@router.delete("/{lead_id}", status_code=204)
+def deletar(lead_id: int, db: Session = Depends(get_db),
+            _=Depends(exige_perfil(*PODEM_VER_LEADS))):
+    # Necessário para conseguir excluir um evento que já tem leads.
+    lead = db.get(models.Lead, lead_id)
+    if not lead:
+        raise HTTPException(404, "Lead não encontrado")
+    db.delete(lead)
+    db.commit()

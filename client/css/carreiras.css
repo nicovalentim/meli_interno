@@ -1,0 +1,55 @@
+header {
+    color: var(--branco);
+}
+
+search {
+    display: grid;
+    justify-content: center;
+    justify-self: center;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 85%;
+}
+
+select,
+#pesquisaVaga {
+    border: 1px solid var(--cinzaEscuro);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+#pesquisaVaga {
+    grid-column: span 3;
+
+    font-size: 1.2em;
+    text-align: left;
+    text-indent: 48px;
+
+    background-color: var(--branco);
+    background-image: url(../rsc/icones/pesquisa.svg);
+    background-position: 16px;
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+}
+
+main {
+    grid-template-columns: repeat(4, 1fr);
+}
+    main h1 {
+        grid-column: span 4;
+        margin: 0 !important;
+    }
+
+aside * {
+    margin: 4px 0;
+}
+    aside a {
+        border: 2px solid var(--azul);
+        border-radius: 8px;
+        padding: 8px;
+        width: fit-content;
+
+        background-color: var(--azul);
+        color: var(--branco);
+        font-weight: 600;
+    }

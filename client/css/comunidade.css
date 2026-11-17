@@ -1,0 +1,21 @@
+header {
+    color: var(--branco);
+}
+
+main {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+aside * {
+    margin: 4px 0;
+}
+    aside a {
+        border: 2px solid var(--azul);
+        border-radius: 8px;
+        padding: 4px;
+        width: fit-content;
+
+        background-color: var(--azul);
+        color: var(--branco);
+        font-weight: 600;
+    }

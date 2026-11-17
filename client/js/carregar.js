@@ -28,7 +28,7 @@ export const header = {
         const header = document.querySelector("header");
         if (header) {
             header.style.backgroundColor = `var(--${header.dataset.cor})`;
-            header.style.setProperty('--bg', `url("${header.dataset.img}")`);
+            header.style.setProperty('--bg', `url("../rsc/imagens/${header.dataset.img}.png")`);
         }
     }
 };

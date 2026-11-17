@@ -1,0 +1,40 @@
+aside h4,
+aside p {
+    margin: 0;
+}
+
+header {
+    color: var(--cinzaEscuro);
+}
+
+mark {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+
+    border-radius: 16px;
+    padding: 32px;
+    grid-column: span 3;
+
+    background-color: var(--amareloMaisclaro);
+    color: var(--azul);
+}
+    mark a {
+        color: var(--azul);
+        font-weight: 600;
+
+        cursor: pointer;
+        user-select: none;
+
+        justify-self: right;
+        width: fit-content;
+
+        border: 3px solid var(--azul);
+        border-radius: 8px;
+        padding: 8px;
+    }
+    mark h1,
+    mark p {
+        grid-column: 1;
+        margin: 0;
+        text-align: left;
+    }
