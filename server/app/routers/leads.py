@@ -7,8 +7,8 @@ from ..auth import exige_perfil
 
 router = APIRouter(prefix="/leads", tags=["Leads"])
 
-# Dados de candidatos são sensíveis: só TA e TAOps acessam.
-PODEM_VER_LEADS = ("talent_attraction", "taops")
+# Dados de candidatos são sensíveis: só admin acessa.
+PODEM_VER_LEADS = ("admin",)
 
 
 @router.post("", response_model=schemas.LeadOut, status_code=201)

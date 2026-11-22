@@ -1,18 +1,10 @@
+import { formatar, buscarTodos } from "./global.js";
+import { rota } from "./rotas.js";
+
 export const carreiras = {
-    api: "/api/vagas",
     limite: null,
 
-    filtroAtual: { localizacao: "", regime: "", area: "" },
-
-    rotulosArea: {
-        ti: "Tecnologia da Informação",
-        adm: "Administração",
-        mkt: "Marketing",
-        com: "Comércio / Vendas",
-        log: "Logística",
-        eng: "Engenharia"
-    },
-
+    filtroAtual: { regiao: "", parceiro: "", mes: "" },
 
     normalizar(texto) {
         return String(texto ?? "")
@@ -31,80 +23,103 @@ export const carreiras = {
             .replace(/'/g, "&#39;");
     },
 
-    rotulo(campo, valor) {
-        if (campo === "area") return this.rotulosArea[this.normalizar(valor)] || valor;
-        return valor;
+    campos(evento) {
+        const mes = formatar.chaveMes(evento.data);
+        return {
+            regiao: { valor: this.normalizar(evento.regiao), texto: evento.regiao || "" },
+            parceiro: { valor: this.normalizar(evento.parceiro), texto: evento.parceiro || "" },
+            mes: { valor: mes, texto: formatar.mes(mes) }
+        };
     },
 
     async banco() {
         try {
-            const resposta = await fetch(this.api);
-            if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
-            const dados = await resposta.json();
-            return Array.isArray(dados.vagas) ? dados.vagas : [];
+            const [lista, parceiros] = await Promise.all([
+                buscarTodos(rota.eventos, { status: "planejado" }),
+                buscarTodos(rota.parceiros).catch(() => [])
+            ]);
+            const porId = Object.fromEntries(parceiros.map(p => [p.id, p]));
+
+            return lista.map(evento => ({
+                ...evento,
+                parceiro: porId[evento.parceiroId]?.nome || ""
+            }));
         } catch (erro) {
-            console.error("Erro ao buscar vagas: ", erro);
+            console.error("Erro ao buscar eventos: ", erro);
             return null;
         }
     },
 
-    gerarCard(vaga) {
-        const localizacao = vaga.localizacao || "";
-        const regime = vaga.regime || "";
-        const area = vaga.area || "";
+    gerarCard(evento) {
+        const campos = this.campos(evento);
+        const local = evento.local || evento.regiao || "";
+        const vagas = Number(evento.vagas) || 0;
+        const detalhe = [
+            formatar.data(evento.data),
+            vagas > 0 ? `${vagas} ${vagas === 1 ? "vaga" : "vagas"}` : ""
+        ].filter(Boolean).join(" · ");
 
         return `
             <article class="vaga"
-                id="vaga_${this.escapar(vaga.id)}"
-                data-localizacao="${this.escapar(this.normalizar(localizacao))}"
-                data-regime="${this.escapar(this.normalizar(regime))}"
-                data-area="${this.escapar(this.normalizar(area))}">
+                id="evento_${this.escapar(evento.id)}"
+                data-regiao="${this.escapar(campos.regiao.valor)}"
+                data-parceiro="${this.escapar(campos.parceiro.valor)}"
+                data-mes="${this.escapar(campos.mes.valor)}">
                 <aside>
-                    <h1>${this.escapar(vaga.titulo || "")}</h1>
-                    <p>${this.escapar(localizacao)}</p>
-                    <p>${this.escapar(regime)}</p>
-                    <a>${this.escapar(this.rotulo("area", area))}</a>
+                    <h3>${this.escapar(evento.nome)}</h3>
+                    <p>${this.escapar(local)}</p>
+                    <p>${this.escapar(detalhe)}</p>
+                    ${evento.parceiro ? `<a>${this.escapar(evento.parceiro)}</a>` : ""}
                 </aside>
             </article>`;
     },
 
-    renderizarVagas(vagas) {
+    aviso(texto) {
+        const main = document.querySelector("main");
+        if (!main) return;
+
+        let elemento = document.getElementById("avisoVagas");
+        if (!elemento) {
+            elemento = document.createElement("p");
+            elemento.id = "avisoVagas";
+            main.append(elemento);
+        }
+        elemento.textContent = texto;
+        elemento.hidden = !texto;
+    },
+
+    renderizarVagas(lista) {
         const main = document.querySelector("main");
         if (!main) return;
 
         main.querySelectorAll("article").forEach(card => card.remove());
 
-        const lista = [...vagas].sort(
-            (a, b) => new Date(b.data_de_criacao).getTime() - new Date(a.data_de_criacao).getTime()
-        );
         const exibidas = this.limite ? lista.slice(0, this.limite) : lista;
-
-        main.insertAdjacentHTML("beforeend", exibidas.map(vaga => this.gerarCard(vaga)).join(""));
+        main.insertAdjacentHTML("beforeend", exibidas.map(evento => this.gerarCard(evento)).join(""));
     },
-
 
     obterSelects() {
         return [...document.querySelectorAll("search select[data-campo]")];
     },
 
-    preencherSelects(vagas) {
+    preencherSelects(lista) {
         this.obterSelects().forEach(select => {
             const campo = select.dataset.campo;
             const existentes = new Set([...select.options].map(op => op.value));
 
             const novos = new Map();
-            vagas.forEach(vaga => {
-                const valor = vaga[campo];
-                const norm = this.normalizar(valor);
-                if (valor && !existentes.has(norm) && !novos.has(norm)) novos.set(norm, valor);
+            lista.forEach(evento => {
+                const { valor, texto } = this.campos(evento)[campo] || {};
+                if (valor && !existentes.has(valor) && !novos.has(valor)) novos.set(valor, texto);
             });
 
+            const ordenar = campo === "mes"
+                ? ([a], [b]) => a.localeCompare(b)
+                : ([, a], [, b]) => a.localeCompare(b, "pt-BR");
+
             [...novos.entries()]
-                .map(([valor, original]) => ({ valor, texto: this.rotulo(campo, original) }))
-                .sort((a, b) => a.texto.localeCompare(b.texto, "pt-BR"))
-                .forEach(({ valor, texto }) => {
-                    select.add(new Option(texto, valor));
-                });
+                .sort(ordenar)
+                .forEach(([valor, texto]) => select.add(new Option(texto, valor)));
         });
     },
 
@@ -112,19 +127,26 @@ export const carreiras = {
         const busca = document.getElementById("pesquisaVaga");
         const pesquisa = this.normalizar(busca ? busca.value : "");
 
-        document.querySelectorAll("main article.vaga").forEach(vaga => {
+        const cards = [...document.querySelectorAll("main article.vaga")];
+        let visiveis = 0;
+
+        cards.forEach(card => {
             let visivel = true;
 
-            if (pesquisa !== "" && !this.normalizar(vaga.textContent).includes(pesquisa))
+            if (pesquisa !== "" && !this.normalizar(card.textContent).includes(pesquisa))
                 visivel = false;
 
             for (const campo in this.filtroAtual) {
                 const escolhido = this.filtroAtual[campo];
-                if (escolhido && vaga.dataset[campo] !== escolhido) visivel = false;
+                if (escolhido && card.dataset[campo] !== escolhido) visivel = false;
             }
 
-            vaga.style.display = visivel ? "" : "none";
+            card.style.display = visivel ? "" : "none";
+            if (visivel) visiveis++;
         });
+
+        if (cards.length > 0 && visiveis === 0) this.aviso("Nenhuma oportunidade encontrada para esses filtros.");
+        else if (cards.length > 0) this.aviso("");
     },
 
     eventos() {
@@ -141,16 +163,19 @@ export const carreiras = {
 
     async render() {
         this.eventos();
+        this.aviso("Carregando oportunidades...");
 
-        const vagas = await this.banco();
-        if (vagas === null) {
-            this.filtrar();
+        const lista = await this.banco();
+        if (lista === null) {
+            this.aviso("Não foi possível carregar as oportunidades agora. Tente novamente em instantes.");
             return;
         }
 
-        this.renderizarVagas(vagas);
-        this.preencherSelects(vagas);
-        this.filtrar();
+        this.renderizarVagas(lista);
+        this.preencherSelects(lista);
+
+        if (lista.length === 0) this.aviso("Nenhuma oportunidade aberta no momento.");
+        else this.filtrar();
     }
 };
 

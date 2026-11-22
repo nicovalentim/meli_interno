@@ -10,7 +10,7 @@ router = APIRouter(prefix="/parceiros", tags=["Parceiros"])
 @router.post("", response_model=schemas.ParceiroOut, status_code=201)
 @router.post("/", response_model=schemas.ParceiroOut, status_code=201, include_in_schema=False)
 def criar(dados: schemas.ParceiroIn, db: Session = Depends(get_db),
-          _=Depends(exige_perfil("talent_attraction", "taops"))):
+          _=Depends(exige_perfil("admin"))):
     if db.query(models.Parceiro).filter_by(nome=dados.nome).first():
         raise HTTPException(409, "Parceiro já cadastrado")  # evita duplicidade
     parceiro = models.Parceiro(**dados.model_dump())

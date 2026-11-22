@@ -2,20 +2,90 @@ header {
     color: var(--branco);
 }
 
+.abas {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+    .abas button {
+        border: none;
+        box-shadow: 2px 4px 1px var(--cinzaMaisClaro);
+        border-radius: 16px;
+
+        color: var(--cinzaEscuro);
+
+        padding: 14px 8px;
+
+        cursor: pointer;
+    }
+        .abas button:hover,
+        .abas button[aria-selected="true"] {
+            background-color: var(--cinza);
+            color: var(--branco);
+        }
+
 main {
     grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
 }
 
-aside * {
-    margin: 4px 0;
+section {
+    grid-column: 1 / -1;
+    display: flex;
 }
-    aside a {
-        border: 2px solid var(--azul);
-        border-radius: 8px;
-        padding: 4px;
-        width: fit-content;
-
-        background-color: var(--azul);
-        color: var(--branco);
+    section h1 {
+        color: var(--azul);
+        font-size: 1.6em;
+    }
+    section a {
+        color: var(--azulClaro);
         font-weight: 600;
     }
+
+#avisoComunidade {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--cinza);
+}
+
+main article {
+    display: block;
+    padding: 0;
+}
+    main h1 {
+        grid-column: span 3;
+    }
+    main article img,
+    main article .capa {
+        display: block;
+        width: 100%;
+        height: 180px;
+        border-radius: 0;
+    }
+    main article .texto {
+        padding: 16px;
+    }
+    main article h2 {
+        margin: 0;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+    main article p {
+        margin: 2px 0;
+        color: var(--cinza);
+        font-size: 0.9em;
+    }
+
+@media (max-width: 1024px) {
+    main {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    main h1 {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 600px) {
+    .abas {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

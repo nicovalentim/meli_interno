@@ -8,7 +8,7 @@ import os
 
 from . import models  
 from .database import Base, engine
-from .routers import eventos, parceiros, leads, dashboard
+from .routers import eventos, parceiros, leads, dashboard, login
 
 # Cria as tabelas no banco se ainda não existirem
 Base.metadata.create_all(bind=engine)
@@ -31,6 +31,14 @@ app.include_router(eventos.router)
 app.include_router(parceiros.router)
 app.include_router(leads.router)
 app.include_router(dashboard.router)
+app.include_router(login.router)
+
+# ---------------------------------------------------------------------------------------------
+# ADICIONADO: cria dados de teste pra conseguir ver as coisas na página
+from .routers import dados_teste
+dados_teste.popular_ao_iniciar()
+app.include_router(dados_teste.router)
+# ---------------------------------------------------------------------------------------------
 
 # Caminho para a pasta client
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -41,7 +49,7 @@ if os.path.exists(CLIENT_DIR):
 
 @app.get("/", tags=["Status"])
 def raiz():
-    index_path = os.path.join(CLIENT_DIR, "index.html")
+    index_path = os.path.join(CLIENT_DIR, "html/home.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
     return {"status": "ok", "docs": "/docs"}

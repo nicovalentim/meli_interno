@@ -13,7 +13,7 @@ search {
 
 select,
 #pesquisaVaga {
-    border: 1px solid var(--cinzaEscuro);
+    border: none;
     border-radius: 16px;
     padding: 16px;
 }
@@ -33,11 +33,11 @@ select,
 }
 
 main {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
 }
     main h1 {
-        grid-column: span 4;
-        margin: 0 !important;
+        grid-column: span 3;
+        margin: 0;
     }
 
 aside * {
@@ -51,5 +51,41 @@ aside * {
 
         background-color: var(--azul);
         color: var(--branco);
-        font-weight: 600;
+        font-size: 0.8em;
     }
+
+@media (max-width: 1024px) {
+    main {
+        grid-template-columns: repeat(2, 1fr);
+    }
+        main h1 {
+            grid-column: 1 / -1;
+        }
+}
+
+@media (max-width: 768px) {
+    search {
+        grid-template-columns: 1fr;
+        width: calc(100% - 32px);
+    }
+
+    #pesquisaVaga {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+
+    #pesquisaVaga {
+        font-size: 1em;
+    }
+}
+
+#avisoVagas {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--cinza);
+}

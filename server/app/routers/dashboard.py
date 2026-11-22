@@ -1,16 +1,16 @@
-# Indicadores e cobertura por região (base para os dashboards).
+# Indicadores e cobertura por região (base para os dashboards). Só admin.
 from fastapi import APIRouter, Depends
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from .. import models
 from ..database import get_db
-from ..auth import perfil_atual
+from ..auth import exige_perfil
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
 
 @router.get("/indicadores")
-def indicadores(db: Session = Depends(get_db), _=Depends(perfil_atual)):
+def indicadores(db: Session = Depends(get_db), _=Depends(exige_perfil("admin"))):
     return {
         "eventos_total": db.query(models.Evento).count(),
         "eventos_realizados": db.query(models.Evento).filter_by(status="realizado").count(),
@@ -20,7 +20,7 @@ def indicadores(db: Session = Depends(get_db), _=Depends(perfil_atual)):
 
 
 @router.get("/cobertura")
-def cobertura(db: Session = Depends(get_db), _=Depends(perfil_atual)):
+def cobertura(db: Session = Depends(get_db), _=Depends(exige_perfil("admin"))):
     """Quantidade de eventos por região (sem os cancelados): muitas = saturada, poucas = potencial."""
     status = func.coalesce(models.Evento.status, "planejado")
     linhas = (db.query(models.Evento.regiao, func.count(models.Evento.id))

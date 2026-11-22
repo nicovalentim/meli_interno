@@ -1,5 +1,6 @@
 <html>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <head>
         <link rel="icon" type="image/icon" href="../rsc/icones/favicon.ico" />
         <title>Portal Mercado Livre</title>
@@ -15,66 +16,33 @@
             data-cor="azul"
         >
             <h1>
-                Seu futuro também é agora
+                Carreiras que movem
             </h1>
             <p>
-                Explore trilhas, cursos e ferramentas para aprimorar suas habilidades e crescer com a gente.
+                Aqui, você encontra oportunidades para desenvolver seu talento, construir seu futuro e fazer parte de algo maior.
             </p>
         </header>
-
-        <hr />
 
         <search>
             <input type="text" id="pesquisaVaga" placeholder=" " />
 
-            <!-- data-campo diz ao carreiras.js qual campo da vaga o select filtra -->
-            <select data-campo="localizacao">
+            <select data-campo="regiao">
                 <option value="">Localização</option>
             </select>
 
-            <!-- opções fixas para teste; o carreiras.js acrescenta as que vierem da API -->
-            <select data-campo="regime">
-                <option value="">Regime</option>
-                <option value="presencial">Presencial</option>
-                <option value="remoto">Remoto</option>
+            <select data-campo="parceiro">
+                <option value="">Parceiro</option>
             </select>
 
-            <select data-campo="area">
-                <option value="">Área</option>
+            <select data-campo="mes">
+                <option value="">Mês</option>
             </select>
         </search>
 
         <main>
             <h1>
-                Vagas em destaque
+                Oportunidades em destaque
             </h1>
-            <article class="vaga"
-                data-localizacao="sao paulo - sp"
-                data-regime="presencial"
-                data-area="rh">
-                <aside>
-                    <h1>
-                        Analista de análise
-                    </h1>
-                    <p>São Paulo - SP</p>
-                    <p>Presencial</p>
-                    <a>RH</a>
-                </aside>
-            </article>
-
-            <article class="vaga"
-                data-localizacao="rio de janeiro - rj"
-                data-regime="remoto"
-                data-area="ti">
-                <aside>
-                    <h1>
-                        Desenvolvedor de desenvolvimento
-                    </h1>
-                    <p>Rio de Janeiro - RJ</p>
-                    <p>Remoto</p>
-                    <a>TI</a>
-                </aside>
-            </article>
         </main>
 
         <footer></footer>

@@ -1,9 +1,10 @@
 <html>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <head>
         <link rel="icon" type="image/icon" href="../rsc/icones/favicon.ico" />
         <title>Portal Mercado Livre</title>
-
+        
         <link rel="stylesheet" href="../css/global.css" />
         <link rel="stylesheet" href="../css/desenvolvimento.css" />
     </head>
@@ -22,35 +23,35 @@
             </p>
         </header>
 
-        <hr />
+        <main class="desenvolvimento">
 
-        <main>
+            <section class="ultimo">
+                <h1>
+                    Seu progresso
+                </h1>
+                <canvas class="grafico" id="graficoProgresso"></canvas>
+                <div>
+                    <p class="titulo" id="destaqueTitulo"></p>
+                    <p id="destaqueProgresso"></p>
+                    <button id="destaqueBotao" hidden>Continuar</button>
+                </div>
+            </section>
 
-            <canvas class="grafico"
-                data-grafico1="vagas"
-                data-grafico2="areas"
-                data-tipo="rosca"
-                style="width: 100%; height: 320px;"></canvas>
+            <section class="proximos">
+                <h2>
+                    Próximos passos
+                </h2>
+                <ul id="proximosPassos"></ul>
+            </section>
 
-            <canvas class="grafico"
-                data-grafico1="vagas"
-                data-grafico2="regime"
-                data-tipo="pizza"
-                style="width: 100%; height: 320px;"></canvas>
-
-            <canvas class="grafico"
-                data-grafico1="vagas"
-                data-grafico2="localizacao"
-                data-tipo="barra"
-                data-rotacao="45"
-                style="width: 100%; height: 320px;"></canvas>
-
-            <canvas class="grafico"
-                data-grafico1="vagas"
-                data-grafico2="salario"
-                data-tipo="linha"
-                data-rotacao="45"
-                style="width: 100%; height: 320px;"></canvas>
+            <div>
+                <h2>
+                    Trilhas de aprendizado
+                </h2>
+                <a>
+                    Ver todos →
+                </a>
+            </div>
 
         </main>
 

@@ -30,12 +30,23 @@ export const header = {
             header.style.backgroundColor = `var(--${header.dataset.cor})`;
             header.style.setProperty('--bg', `url("../rsc/imagens/${header.dataset.img}.png")`);
         }
+
     }
 };
 
 export const nav = {
     async render() {
         await template("nav");
+
+        const avatar = document.getElementById("avatar");
+        let userAvatar;
+        if (avatar) {
+            avatar.src =
+            userAvatar ?
+                fetch() :
+                "../rsc/icones/avatar.png";
+        }
+
         let linksNav = document.querySelectorAll('nav [data-nav]');
 
         linksNav.forEach(item => {
@@ -57,5 +68,33 @@ export const nav = {
                     item.classList.remove("navAtual");
             }
         });
+
+        const navEl = document.querySelector("nav");
+        const botao = document.getElementById("menuHamburguer");
+
+        if (navEl && botao) {
+            const alternar = (aberto) => {
+                navEl.classList.toggle("menuAberto", aberto);
+                botao.setAttribute("aria-expanded", String(aberto));
+                botao.setAttribute("aria-label", aberto ? "Fechar menu" : "Abrir menu");
+            };
+
+            botao.addEventListener("click", () =>
+                alternar(!navEl.classList.contains("menuAberto"))
+            );
+
+            navEl.querySelectorAll("ul a").forEach(link =>
+                link.addEventListener("click", () => alternar(false))
+            );
+            document.addEventListener("click", (e) => {
+                if (!navEl.contains(e.target)) alternar(false);
+            });
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") alternar(false);
+            });
+            window.matchMedia("(min-width: 1025px)").addEventListener("change", (e) => {
+                if (e.matches) alternar(false);
+            });
+        }
     }
 };

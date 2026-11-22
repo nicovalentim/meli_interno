@@ -70,7 +70,7 @@ export async function graficos() {
     trintaDiasAtras.setDate(agora.getDate() - 30);
 
     const candidaturasUltimos30Dias = dados.candidaturas.filter(candidatura => {
-        const campoData = candidatura.data_candidatura || candidatura.data;
+        const campoData = candidatura.dataCandidatura || candidatura.data;
         const dataCandidatura = extrairDataSegura(campoData);
         return !isNaN(dataCandidatura) && dataCandidatura >= trintaDiasAtras;
     });
@@ -81,7 +81,7 @@ export async function graficos() {
 
     const vagasMesPassado = document.getElementById("vagasMesPassado");
     const vagasUltimos30Dias = dados.vagas.filter(vaga => {
-        const campoData = vaga.data_criacao || vaga.data;
+        const campoData = vaga.dataCriacao || vaga.data;
         const dataVaga = extrairDataSegura(campoData);
         return !isNaN(dataVaga) && dataVaga >= trintaDiasAtras;
     });

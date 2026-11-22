@@ -1,7 +1,3 @@
-/*
-    ver as variáveis e modificar de acordo
-*/
-
 const css = getComputedStyle(document.documentElement);
 const branco = css.getPropertyValue('--branco').trim();
 const preto = css.getPropertyValue('--preto').trim();

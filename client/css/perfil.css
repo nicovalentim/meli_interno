@@ -1,0 +1,107 @@
+header {
+    color: var(--cinzaEscuro);
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    gap: 32px;
+}
+    #avatarPerfil {
+        height: 180px;
+        width: 180px;
+
+        border-radius: 100%;
+        justify-self: end;
+    }
+    header section {
+        background-color: var(--branco10);
+        border-radius: 32px 0 0;
+        padding: 0;
+        padding-top: 8px;
+
+        font-weight: 600;
+
+        align-self: flex-end;
+        grid-column: 4;
+        justify-items: center;
+
+        gap: 0;
+        grid-template-columns: none;
+    }
+        header section a {
+            background: none;
+            color: var(--azul);
+
+            margin: 0;
+        }
+
+/* indicadores */
+section.indicadores {
+    grid-template-columns: repeat(2, 1fr);
+}
+    section.indicadores aside p {
+        color: var(--azul);
+        font-size: 2em;
+        font-weight: 800;
+        margin: 0;
+    }
+
+/* acompanhador de cursos */
+#perfilCursos {
+    grid-template-columns: repeat(3, 1fr);
+}
+    #perfilCursos h1,
+    #perfilCursos h2,
+    #perfilCursos .aviso {
+        grid-column: 1 / -1;
+        margin: 0;
+    }
+    #perfilCursos h2 {
+        color: var(--azul);
+        font-size: 1.3em;
+    }
+    #perfilCursos article {
+        display: block;
+    }
+        #perfilCursos article h3 {
+            margin: 0 0 8px;
+            font-size: 1.1em;
+        }
+        #perfilCursos article p {
+            margin: 4px 0 0;
+            color: var(--cinza);
+        }
+        #perfilCursos article progress {
+            display: block;
+            width: 100%;
+            height: 8px;
+            margin-top: 8px;
+            accent-color: var(--azulClaro);
+        }
+        #perfilCursos article .selo {
+            color: var(--credito);
+            font-weight: 600;
+        }
+
+@media (max-width: 1024px) {
+    header {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+        padding-bottom: 0;
+    }
+        header section {
+            border-radius: 32px 32px 0 0;
+            grid-column: span 2;
+        }
+
+    #perfilCursos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    section.indicadores,
+    #perfilCursos {
+        grid-template-columns: 1fr;
+    }
+}

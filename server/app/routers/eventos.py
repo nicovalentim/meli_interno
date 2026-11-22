@@ -7,7 +7,7 @@ from ..auth import perfil_atual, exige_perfil
 
 router = APIRouter(prefix="/eventos", tags=["Eventos"])
 
-SO_TA = exige_perfil("talent_attraction")
+SO_ADMIN = exige_perfil("admin")
 
 
 def _acha_evento(db: Session, evento_id: int):
@@ -26,7 +26,7 @@ def _confere_parceiro(db: Session, parceiro_id: Optional[int]):
 
 @router.post("", response_model=schemas.EventoOut, status_code=201)
 @router.post("/", response_model=schemas.EventoOut, status_code=201, include_in_schema=False)
-def criar(dados: schemas.EventoIn, db: Session = Depends(get_db), _=Depends(SO_TA)):
+def criar(dados: schemas.EventoIn, db: Session = Depends(get_db), _=Depends(SO_ADMIN)):
     # Cadastra UMA vez; todas as áreas enxergam via GET.
     _confere_parceiro(db, dados.parceiro_id)
     evento = models.Evento(**dados.model_dump())
@@ -60,7 +60,7 @@ def buscar(evento_id: int, db: Session = Depends(get_db), _=Depends(perfil_atual
 
 
 @router.put("/{evento_id}", response_model=schemas.EventoOut)
-def atualizar(evento_id: int, dados: schemas.EventoIn, db: Session = Depends(get_db), _=Depends(SO_TA)):
+def atualizar(evento_id: int, dados: schemas.EventoIn, db: Session = Depends(get_db), _=Depends(SO_ADMIN)):
     # PUT troca o evento inteiro: campos que não forem enviados voltam ao valor padrão.
     # Para mudar só alguns campos, use PATCH.
     evento = _acha_evento(db, evento_id)
@@ -73,7 +73,7 @@ def atualizar(evento_id: int, dados: schemas.EventoIn, db: Session = Depends(get
 
 
 @router.patch("/{evento_id}", response_model=schemas.EventoOut)
-def editar(evento_id: int, dados: schemas.EventoPatch, db: Session = Depends(get_db), _=Depends(SO_TA)):
+def editar(evento_id: int, dados: schemas.EventoPatch, db: Session = Depends(get_db), _=Depends(SO_ADMIN)):
     evento = _acha_evento(db, evento_id)
     campos = dados.model_dump(exclude_unset=True)  # só o que foi enviado
     _confere_parceiro(db, campos.get("parceiro_id"))
@@ -85,7 +85,7 @@ def editar(evento_id: int, dados: schemas.EventoPatch, db: Session = Depends(get
 
 
 @router.delete("/{evento_id}", status_code=204)
-def deletar(evento_id: int, db: Session = Depends(get_db), _=Depends(SO_TA)):
+def deletar(evento_id: int, db: Session = Depends(get_db), _=Depends(SO_ADMIN)):
     evento = _acha_evento(db, evento_id)
     if db.query(models.Lead).filter_by(evento_id=evento_id).first():
         raise HTTPException(409, "Este evento tem leads cadastrados e não pode ser apagado. "

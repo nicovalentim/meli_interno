@@ -47,9 +47,10 @@
 :root {
     --amarelo: #FFE600;
         --amareloClaro: #FFF39F;
-        --amareloMaisclaro: #FFF39F;
+        --amareloMaisClaro: #FFF39F;
 
     --azul: #203277;
+        --azulClaro: #3483FA;
 
     --branco: #F7F7F7;
         --branco10: #EEE;
@@ -77,8 +78,8 @@ body {
     }
 
 .logo {
-    min-width: 120px;
-    content: url('../rsc/icones/logo.png');
+    min-height: 30px;
+    content: url('../rsc/icones/logoCompleto.png');
     user-select: none;
 }
 
@@ -132,7 +133,7 @@ header {
         width: fit-content;
     }
     header h1 {
-        font-size: 3em;
+        font-size: 2.95em;
         margin-bottom: 0 !important;
     }
     header p {
@@ -154,19 +155,26 @@ header {
         background-position: right;
         background-repeat: no-repeat;
 
-        filter: 
+        filter:
             saturate(0.7);
     }
 
 nav {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    min-height: 64px;
 
     background-color: var(--branco);
 }
+    nav > a {
+        display: flex;
+        margin-left: 40px;
+    }
     nav ul {
         display: flex;
         align-items: center;
+        padding: 0;
     }
         nav a {
             cursor: pointer;
@@ -191,6 +199,30 @@ nav {
         .navAtual {
             text-decoration: underline solid var(--azul) 4px;
             text-underline-offset: 6px;
+        }
+
+    nav div {
+        display: flex;
+        align-items: center;
+    }
+        #avatar {
+            border-radius: 50%;
+            height: 48px;
+            width: 48px;
+        }
+        #pesquisa {
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+
+            text-align: left;
+            text-indent: 8px;
+
+            background-color: inherit;
+            background-image: url(../rsc/icones/pesquisa.svg);
+            background-position: right 8px bottom 50%;
+            background-repeat: no-repeat;
+            background-size: 32px 32px;
         }
 
 main {
@@ -273,3 +305,212 @@ section {
         padding: 0;
         text-align: center;
     }
+
+#menuHamburguer {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    nav {
+        position: relative;
+        z-index: 20;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        min-height: 0;
+        padding: 8px 16px;
+    }
+        nav > a {
+            justify-self: start;
+            margin-left: 0;
+            padding: 0;
+        }
+        nav .logo {
+            margin-right: 0;
+        }
+
+        #menuHamburguer {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            background-color: transparent;
+            cursor: pointer;
+        }
+            #menuHamburguer span {
+                display: block;
+                width: 24px;
+                height: 3px;
+                border-radius: 2px;
+                background-color: var(--azul);
+                transition: transform 0.2s, opacity 0.2s;
+            }
+            nav.menuAberto #menuHamburguer span:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+            nav.menuAberto #menuHamburguer span:nth-child(2) {
+                opacity: 0;
+            }
+            nav.menuAberto #menuHamburguer span:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+
+        nav ul {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+
+            flex-direction: column;
+            align-items: stretch;
+            width: min(50%, 320px);
+            margin: 0;
+            padding: 8px;
+
+            background-color: var(--branco);
+            border-radius: 16px;
+            box-shadow: 2px 4px 8px var(--cinzaMaisClaro);
+            text-align: center;
+        }
+            nav.menuAberto ul {
+                display: flex;
+            }
+            nav ul a {
+                padding: 12px 16px;
+            }
+            nav li {
+                display: block;
+            }
+
+        nav a:last-child {
+            justify-self: end;
+        }
+
+    header {
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+        header h1,
+        header p {
+            max-width: 45%;
+        }
+
+    main {
+        gap: 24px;
+        padding: 16px;
+    }
+
+    section {
+        border-radius: 16px;
+
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        padding: 16px;
+    }
+
+    footer {
+        padding: 12px 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    .logo {
+        content: url('../rsc/icones/logoMenor.png');
+    }
+    header {
+        min-height: 180px;
+        padding: 32px 24px;
+    }
+        header h1,
+        header p {
+            max-width: 100%;
+        }
+        header h1 {
+            font-size: 2em;
+        }
+        header::before {
+            opacity: 0.3;
+        }
+
+    section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    footer {
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    main article img {
+        height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    nav {
+        padding: 8px 12px;
+    }
+
+    header {
+        padding: 24px 16px;
+    }
+        header h1 {
+            font-size: 1.7em;
+        }
+
+    main,
+    section {
+        gap: 16px;
+        padding: 12px;
+    }
+
+    section {
+        grid-template-columns: 1fr;
+    }
+}
+
+#menuUsuario {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+    padding: 8px;
+
+    background-color: var(--branco);
+    border-radius: 16px;
+    box-shadow: 2px 4px 8px var(--cinzaMaisClaro);
+}
+    #menuUsuario[hidden] {
+        display: none;
+    }
+    #menuUsuario p {
+        margin: 0;
+        padding: 8px 16px;
+        font-weight: 600;
+    }
+        #menuUsuario small {
+            display: block;
+            color: var(--cinza);
+            font-weight: 400;
+        }
+    #menuUsuario a,
+    #menuUsuario button {
+        display: block;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 16px;
+
+        background-color: transparent;
+        color: var(--cinzaEscuro);
+        text-align: left;
+        cursor: pointer;
+    }
+        #menuUsuario a:hover,
+        #menuUsuario button:hover {
+            background-color: var(--branco10);
+        }

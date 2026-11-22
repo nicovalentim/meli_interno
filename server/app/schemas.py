@@ -19,6 +19,7 @@ class ParceiroIn(Entrada):
     nome: str = Field(min_length=1, max_length=120)
     tipo: Optional[str] = Field(None, max_length=50)
     regiao: Optional[str] = Field(None, max_length=80)
+    imagem: Optional[str] = Field(None, max_length=300)
 
 
 class ParceiroOut(ParceiroIn):
@@ -36,6 +37,7 @@ class EventoIn(Entrada):
     status: StatusEvento = "planejado"
     responsavel: Optional[str] = Field(None, max_length=80)
     parceiro_id: Optional[int] = Field(None, gt=0)
+    imagem: Optional[str] = Field(None, max_length=300)
 
 
 class EventoPatch(Entrada):
@@ -48,6 +50,7 @@ class EventoPatch(Entrada):
     status: Optional[StatusEvento] = None
     responsavel: Optional[str] = Field(None, max_length=80)
     parceiro_id: Optional[int] = Field(None, gt=0)
+    imagem: Optional[str] = Field(None, max_length=300)
 
     @field_validator("nome", "data", "vagas", "status")
     @classmethod
@@ -69,6 +72,7 @@ class LeadIn(Entrada):
     nome: str = Field(min_length=1, max_length=120)
     email: Optional[str] = Field(None, max_length=120, pattern=PADRAO_EMAIL)
     evento_id: int = Field(gt=0)
+    imagem: Optional[str] = Field(None, max_length=300)
 
     @field_validator("email", mode="before")
     @classmethod
@@ -83,3 +87,22 @@ class LeadOut(LeadIn):
     model_config = ConfigDict(from_attributes=True)
     id: int
     email: Optional[str] = None  
+
+# NOVO
+# ---------- Login ----------
+class LoginIn(Entrada):
+    email: str = Field(max_length=120, pattern=PADRAO_EMAIL)
+    senha: str = Field(min_length=6, max_length=128)
+
+    @field_validator("email")
+    @classmethod
+    def email_minusculo(cls, valor):
+        return valor.lower()
+
+
+class LoginOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    perfil: Literal["admin", "user"]
+    nome: str
+    email: str
+    imagem: Optional[str] = None

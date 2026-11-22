@@ -1,8 +1,20 @@
 <nav>
-    <ul>
-        <a href="../html/home.html">
-            <img class="logo" />
-        </a>
+    <a href="../html/home.html">
+        <img class="logo" />
+    </a>
+
+    <button
+        id="menuHamburguer"
+        type="button"
+        aria-expanded="false"
+        aria-controls="menuLinks"
+    >
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <ul id="menuLinks">
         <a
         data-nav="Home"
         ><li></li></a>
@@ -18,11 +30,14 @@
         <a
         data-nav="Comunidade"
         ><li></li></a>
+        <a
+        data-nav="Administrativo"
+        ><li></li></a>
     </ul>
 
-    <p>
-        menu lateral de perfil aqui
-    </p>
+    <a href="perfil.html">
+        <img id="avatar">
+    </a>
 </nav>
 
 <footer>

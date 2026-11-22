@@ -15,7 +15,7 @@ mark {
     padding: 32px;
     grid-column: span 3;
 
-    background-color: var(--amareloMaisclaro);
+    background-color: var(--amareloMaisClaro);
     color: var(--azul);
 }
     mark a {
@@ -38,3 +38,20 @@ mark {
         margin: 0;
         text-align: left;
     }
+
+@media (max-width: 768px) {
+    mark {
+        grid-template-columns: 1fr;
+        padding: 24px;
+    }
+        mark a {
+            justify-self: start;
+            margin-top: 16px;
+        }
+}
+
+@media (max-width: 480px) {
+    mark {
+        padding: 16px;
+    }
+}

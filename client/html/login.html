@@ -1,0 +1,53 @@
+<html>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <link rel="icon" type="image/icon" href="../rsc/icones/favicon.ico" />
+        <title>Entrar - Portal Mercado Livre</title>
+
+        <link rel="stylesheet" href="../css/global.css" />
+        <link rel="stylesheet" href="../css/login.css" />
+    </head>
+
+    <body>
+        <main>
+            <form id="formLogin" novalidate>
+                <img class="logo" alt="Mercado Livre" />
+                <h1>Entrar</h1>
+                <p>Use seu e-mail e senha para acessar o portal.</p>
+
+                <label for="loginEmail">E-mail</label>
+                <input
+                    id="loginEmail"
+                    name="email"
+                    type="email"
+                    autocomplete="username"
+                    aria-describedby="erroEmail"
+                    maxlength="120"
+                />
+                <p class="erroCampo" id="erroEmail" role="alert" hidden></p>
+
+                <label for="loginSenha">Senha</label>
+                <input
+                    id="loginSenha"
+                    name="senha"
+                    type="password"
+                    autocomplete="current-password"
+                    aria-describedby="erroSenha"
+                    maxlength="128"
+                />
+                <p class="erroCampo" id="erroSenha" role="alert" hidden></p>
+
+                <p class="erroCampo" id="erroLogin" role="alert" hidden></p>
+                <button type="submit" id="botaoEntrar">Entrar</button>
+            </form>
+        </main>
+
+        <footer></footer>
+
+    </body>
+
+    <script src="../js/global.js" type="module"></script>
+    <script src="../js/login.js" type="module"></script>
+
+</html>
