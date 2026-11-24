@@ -8,7 +8,7 @@ import os
 
 from . import models  
 from .database import Base, engine
-from .routers import eventos, parceiros, leads, dashboard, login
+from .routers import eventos, parceiros, leads, dashboard, login, usuarios
 
 # Cria as tabelas no banco se ainda não existirem
 Base.metadata.create_all(bind=engine)
@@ -32,6 +32,7 @@ app.include_router(parceiros.router)
 app.include_router(leads.router)
 app.include_router(dashboard.router)
 app.include_router(login.router)
+app.include_router(usuarios.router)
 
 # ---------------------------------------------------------------------------------------------
 # ADICIONADO: cria dados de teste pra conseguir ver as coisas na página

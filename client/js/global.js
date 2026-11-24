@@ -7,6 +7,7 @@ import { rota } from "./rotas.js";
             const modoTeste = true;
             const perfilModoTeste = "admin"; // "admin" abre tudo; "user" simula o usuário comum
             const emailModoTeste = "modoteste@local";
+            const idModoTeste = 1; // id da conta de teste (admin@exemplo.com num banco novo): as rotas /perfil precisam dele
 
 const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
     "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
@@ -303,7 +304,7 @@ export const menuUsuario = {
 
             console.warn(`MODO DE TESTE ativo (global.js): páginas abertas sem login, perfil "${perfilModoTeste}".`);
             if (!sessao.logado() || (sessaoDeTeste && sessao.perfil() !== perfilModoTeste)) {
-                sessao.entrar({ perfil: perfilModoTeste, nome: "Modo de teste", email: emailModoTeste, imagem: null });
+                sessao.entrar({ id: idModoTeste, perfil: perfilModoTeste, nome: "Modo de teste", email: emailModoTeste, imagem: null });
             }
         }
 

@@ -5,5 +5,6 @@ export const rota = {
     eventos: "/eventos",
     login: "/login",
     parceiros: "/parceiros",
-    perfil: "/perfil"
+    perfil: "/perfil",
+    perfilImagem: "/perfil/imagem"
 };

@@ -16,7 +16,7 @@
 #   Cursos e perfil (o que as páginas Desenvolvimento e Perfil leem; admin e user):
 #     GET /cursos            -> [{ id, titulo, modulos, tempo_conclusao (minutos), imagem }]
 #     GET /cursos/progresso  -> [{ curso_id, modulos_concluidos, ultimo_acesso }]  do perfil do header
-#     GET /perfil            -> { nome, emprego, imagem, eventos_atendidos, vagas_candidatadas }  idem
+#     (GET /perfil agora fica em routers/usuarios.py e lê a tabela usuarios)
 #
 # IMAGENS: parceiros, eventos, leads, cursos e perfis têm a coluna `imagem` (URL ou caminho a partir
 # da raiz do site, ex.: "/rsc/imagens/comunidade.png"). Para dar uma imagem diferente a cada item,
@@ -91,18 +91,8 @@ class TProgressoCurso(Base):
     ultimo_acesso = Column(Date)
 
 
-class TUsuario(Base):
-    __tablename__ = "teste_usuarios"
-    perfil = Column(String(30), primary_key=True)   # valor do header X-Perfil
-    nome = Column(String(120), nullable=False)
-    emprego = Column(String(120))
-    imagem = Column(String(300))                    # URL da imagem de perfil
-    eventos_atendidos = Column(Integer, default=0)
-    vagas_candidatadas = Column(Integer, default=0)
-
-
 # o main.py já criou as tabelas dele antes de importar este arquivo: cria só as de teste
-Base.metadata.create_all(bind=engine, tables=[TCurso.__table__, TProgressoCurso.__table__, TUsuario.__table__])
+Base.metadata.create_all(bind=engine, tables=[TCurso.__table__, TProgressoCurso.__table__])
 
 
 def _banco_protegido() -> bool:
@@ -241,16 +231,11 @@ def progresso_de_teste(hoje: date):
     }
 
 
-# perfil -> (nome, emprego, imagem, eventos_atendidos, vagas_candidatadas)
-USUARIOS = {
-    "admin": ("Marina Costa", "Coordenadora de Talent Attraction", AVATAR, 12, 0),   # 0 vagas: mostra "0"
-    "user": ("Ana Beatriz Lima", "Analista de Atração de Talentos Jr", AVATAR, 6, 3),
-}
-
-# (nome, email, senha, perfil, imagem): contas para entrar no site
+# (nome, email, senha, perfil, cargo, eventos_atendidos, vagas_candidatadas, imagem): contas para entrar no site.
+# imagem None = o front mostra o avatar padrão; a foto real é enviada pela página Perfil (PUT /perfil/imagem).
 CONTAS = [
-    ("Marina Costa", "admin@exemplo.com", "admin123", "admin", AVATAR),
-    ("Ana Beatriz Lima", "user@exemplo.com", "user123", "user", AVATAR),
+    ("Marina Costa", "admin@exemplo.com", "admin123", "admin", "Coordenadora de Talent Attraction", 12, 0, None),
+    ("Ana Beatriz Lima", "user@exemplo.com", "user123", "user", "Analista de Atração de Talentos Jr", 6, 3, None),
 ]
 
 
@@ -280,7 +265,6 @@ def popular_banco(db: Session, limpar: bool = False) -> dict:
               "leads": {"criados": 0, "ja_existiam": 0},
               "cursos": {"criados": 0, "ja_existiam": 0},
               "progresso": {"criados": 0, "ja_existiam": 0},
-              "perfis": {"criados": 0, "ja_existiam": 0},
               "contas": {"criados": 0, "ja_existiam": 0}}
 
     if limpar:
@@ -290,7 +274,6 @@ def popular_banco(db: Session, limpar: bool = False) -> dict:
                               "parceiros": db.query(models.Parceiro).delete(),
                               "progresso": db.query(TProgressoCurso).delete(),
                               "cursos": db.query(TCurso).delete(),
-                              "perfis": db.query(TUsuario).delete(),
                               # só as contas de teste: contas reais não são apagadas
                               "contas": db.query(models.Usuario).filter(
                                   models.Usuario.email.in_([c[1] for c in CONTAS])).delete(synchronize_session=False)}
@@ -361,24 +344,18 @@ def popular_banco(db: Session, limpar: bool = False) -> dict:
                 db.flush()
                 resumo["progresso"]["criados"] += 1
 
-    for perfil, (nome, emprego, imagem, eventos_atendidos, vagas_candidatadas) in USUARIOS.items():
-        usuario = db.get(TUsuario, perfil)
-        if usuario:
-            resumo["perfis"]["ja_existiam"] += 1
-            _preencher_imagem(usuario, imagem, resumo)
-        else:
-            db.add(TUsuario(perfil=perfil, nome=nome, emprego=emprego, imagem=imagem,
-                            eventos_atendidos=eventos_atendidos, vagas_candidatadas=vagas_candidatadas))
-            db.flush()
-            resumo["perfis"]["criados"] += 1
-
-    for nome, email, senha, perfil, imagem in CONTAS:
+    for nome, email, senha, perfil, cargo, eventos_atendidos, vagas_candidatadas, imagem in CONTAS:
         conta = db.query(models.Usuario).filter_by(email=email).first()
         if conta:
             resumo["contas"]["ja_existiam"] += 1
+            if not conta.cargo:   # conta criada antes da coluna cargo: só preenche o que falta
+                conta.cargo = cargo
+                conta.eventos_atendidos = eventos_atendidos
+                conta.vagas_candidatadas = vagas_candidatadas
         else:
-            db.add(models.Usuario(nome=nome, email=email, senha_hash=gerar_hash_senha(senha),
-                                  perfil=perfil, imagem=imagem))
+            db.add(models.Usuario(nome=nome, email=email, senha_hash=gerar_hash_senha(senha), perfil=perfil,
+                                  cargo=cargo, eventos_atendidos=eventos_atendidos,
+                                  vagas_candidatadas=vagas_candidatadas, imagem=imagem))
             db.flush()
             resumo["contas"]["criados"] += 1
 
@@ -403,11 +380,11 @@ def popular_ao_iniciar():
     try:
         r = popular_banco(db)
         criados = {tabela: r[tabela]["criados"] for tabela in
-                   ("parceiros", "eventos", "leads", "cursos", "progresso", "perfis", "contas")}
+                   ("parceiros", "eventos", "leads", "cursos", "progresso", "contas")}
         if any(criados.values()):
             print(f"Dados de teste gravados: {criados['parceiros']} parceiros, {criados['eventos']} eventos, "
                   f"{criados['leads']} leads, {criados['cursos']} cursos, "
-                  f"{criados['progresso']} registros de progresso, {criados['perfis']} perfis, "
+                  f"{criados['progresso']} registros de progresso, "
                   f"{criados['contas']} contas de login.")
         else:
             print("Dados de teste: já estavam no banco.")
@@ -455,14 +432,3 @@ def progresso_dos_cursos(db: Session = Depends(get_db), perfil: str = Depends(pe
     return [{"curso_id": l.curso_id, "modulos_concluidos": l.modulos_concluidos,
              "ultimo_acesso": l.ultimo_acesso.isoformat() if l.ultimo_acesso else None}
             for l in linhas]
-
-
-@router.get("/perfil", tags=TAG_LEITURA)
-def meu_perfil(db: Session = Depends(get_db), perfil: str = Depends(perfil_atual)):
-    """Dados do perfil do header (perfil.js -> hooks nome, emprego, imagem e indicadores)."""
-    usuario = db.get(TUsuario, perfil)
-    if not usuario:
-        raise HTTPException(404, "Perfil sem dados")
-    return {"nome": usuario.nome, "emprego": usuario.emprego, "imagem": usuario.imagem,
-            "eventos_atendidos": usuario.eventos_atendidos,
-            "vagas_candidatadas": usuario.vagas_candidatadas}

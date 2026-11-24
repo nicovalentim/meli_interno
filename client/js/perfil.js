@@ -1,8 +1,8 @@
-import { banco } from "./banco.js";
+import { banco, sessao } from "./banco.js";
 import { cursos, formatar } from "./global.js";
 import { rota } from "./rotas.js";
 
-const avatar = "../rsc/icones/avatar.png";
+const avatarPadrao = "../rsc/icones/avatar.png";
 
 let dadosEmMemoria = null;
 
@@ -29,6 +29,56 @@ const usuario = {
         }
     }
 };
+
+function reduzirImagem(arquivo, lado = 256) {
+    return new Promise((ok, falhou) => {
+        const url = URL.createObjectURL(arquivo);
+        const img = new Image();
+        img.onload = () => {
+            const corte = Math.min(img.width, img.height);
+            const canvas = document.createElement("canvas");
+            canvas.width = canvas.height = lado;
+            canvas.getContext("2d").drawImage(img, (img.width - corte) / 2, (img.height - corte) / 2, corte, corte, 0, 0, lado, lado);
+            URL.revokeObjectURL(url);
+            ok(canvas.toDataURL("image/jpeg", 0.85));
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); falhou(new Error("Não foi possível ler essa imagem.")); };
+        img.src = url;
+    });
+}
+
+function mostrarErroAvatar(texto) {
+    const aviso = document.getElementById("erroAvatar");
+    if (!aviso) return;
+    aviso.textContent = texto;
+    aviso.hidden = !texto;
+}
+
+function ligarTrocaDeFoto() {
+    const entrada = document.getElementById("inputAvatar");
+    document.getElementById("editarPerfil")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        entrada?.click();
+    });
+
+    entrada?.addEventListener("change", async () => {
+        const arquivo = entrada.files[0];
+        entrada.value = "";
+        if (!arquivo) return;
+
+        mostrarErroAvatar("");
+        try {
+            await banco.enviar("PUT", rota.perfilImagem, { imagem: await reduzirImagem(arquivo) });
+            const id = sessao.usuario()?.id;
+            const nova = `/usuarios/${id}/imagem?v=${Date.now()}`;
+            document.getElementById("avatarPerfil").src = nova;
+            sessao.atualizarUsuario({ imagem: nova });
+            document.getElementById("avatar")?.setAttribute("src", nova);
+        } catch (erro) {
+            mostrarErroAvatar(erro.message || "Não foi possível enviar a foto.");
+        }
+    });
+}
 
 export const perfil = {
     escapar(texto) {
@@ -58,7 +108,7 @@ export const perfil = {
         const avatar = document.getElementById("avatarPerfil");
         if (!avatar) return;
 
-        avatar.src = avatar;
+        avatar.src = avatarPadrao;
         const url = await usuario.imagem();
         if (url) avatar.src = url;
     },
@@ -116,4 +166,5 @@ export const perfil = {
     }
 };
 
+ligarTrocaDeFoto();
 perfil.render();

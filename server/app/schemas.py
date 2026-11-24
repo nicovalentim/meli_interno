@@ -102,7 +102,14 @@ class LoginIn(Entrada):
 
 class LoginOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
+    id: int
     perfil: Literal["admin", "user"]
     nome: str
     email: str
-    imagem: Optional[str] = None
+    cargo: Optional[str] = None
+    imagem: Optional[str] = None   # URL da foto (/usuarios/{id}/imagem), não o base64
+
+
+class ImagemIn(Entrada):
+    imagem: str = Field(max_length=400_000,
+                        pattern=r"^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$")

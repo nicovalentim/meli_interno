@@ -1,5 +1,5 @@
 # Tabelas do banco (SQLAlchemy).
-from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from .database import Base
 
@@ -48,4 +48,7 @@ class Usuario(Base):
     email = Column(String(120), nullable=False, unique=True, index=True)
     senha_hash = Column(String(300), nullable=False)
     perfil = Column(String(20), nullable=False)  # "admin" ou "user"
-    imagem = Column(String(300))  # URL da imagem de perfil
+    cargo = Column(String(120))
+    imagem = Column(Text)  # data URL base64 ("data:image/jpeg;base64,...")
+    eventos_atendidos = Column(Integer, default=0)
+    vagas_candidatadas = Column(Integer, default=0)

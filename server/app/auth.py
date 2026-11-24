@@ -4,6 +4,10 @@ import hashlib
 import hmac
 import secrets
 from fastapi import Depends, Header, HTTPException
+from sqlalchemy.orm import Session
+
+from . import models
+from .database import get_db
 
 PERFIS = {"admin", "user"}
 
@@ -39,3 +43,12 @@ def confere_senha(senha: str, guardado: str) -> bool:
         return False
     resumo = hashlib.pbkdf2_hmac("sha256", senha.encode("utf-8"), sal, 200_000)
     return hmac.compare_digest(resumo, esperado)
+
+
+def usuario_atual(x_usuario_id: int = Header(default=0), perfil: str = Depends(perfil_atual),
+                  db: Session = Depends(get_db)):
+    """Quem está chamando, pelo header X-Usuario-Id. Forjável como o X-Perfil: só para demonstração."""
+    usuario = db.get(models.Usuario, x_usuario_id)
+    if not usuario or usuario.perfil != perfil:
+        raise HTTPException(status_code=401, detail="Usuário não identificado: faça login novamente")
+    return usuario

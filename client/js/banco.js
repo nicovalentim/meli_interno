@@ -58,11 +58,16 @@ export const sessao = {
         return perfisDisponiveis[perfil] || perfil;
     },
 
-    entrar({ perfil, nome, email, imagem }) {
+    entrar({ id, perfil, nome, email, cargo, imagem }) {
         if (!(perfil in perfisDisponiveis)) throw new Error(`Perfil inválido: ${perfil}`);
         gravarStorage(chavePerfil, perfil);
-        gravarStorage(chaveUsuario, JSON.stringify({ nome, email, imagem: imagem ?? null }));
+        gravarStorage(chaveUsuario, JSON.stringify({ id, nome, email, cargo: cargo ?? null, imagem: imagem ?? null }));
         banco.limpar();
+    },
+
+    atualizarUsuario(campos) {
+        const atual = this.usuario();
+        if (atual) gravarStorage(chaveUsuario, JSON.stringify({ ...atual, ...campos }));
     },
 
     sair() {
@@ -157,6 +162,8 @@ function montarQuery(params = {}) {
 async function requisitar(metodo, caminho, { params, corpo } = {}) {
     const perfil = sessao.perfil();
     const headers = perfil ? { "X-Perfil": perfil } : {};
+    const idUsuario = sessao.usuario()?.id;
+    if (idUsuario) headers["X-Usuario-Id"] = String(idUsuario);
     if (corpo !== undefined) headers["Content-Type"] = "application/json";
 
     let resposta;

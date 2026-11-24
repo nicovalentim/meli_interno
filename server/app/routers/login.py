@@ -19,4 +19,11 @@ def entrar(dados: schemas.LoginIn, db: Session = Depends(get_db)):
 
     if not usuario or not senha_certa:
         raise HTTPException(401, "E-mail ou senha incorretos")
-    return usuario
+    return schemas.LoginOut(
+        id=usuario.id,
+        perfil=usuario.perfil,
+        nome=usuario.nome,
+        email=usuario.email,
+        cargo=usuario.cargo,
+        imagem=f"/usuarios/{usuario.id}/imagem" if usuario.imagem else None,
+    )
